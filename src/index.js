@@ -42,6 +42,13 @@ class Board extends React.Component {
 		});
 	}
 
+	jumpTo(step) {
+		this.setState({
+			stepNumber: step,
+			xIsNext: (step % 2) === 0,
+		});
+	}
+
 	renderSquare(i) {
 		return (
 			<Square 
@@ -82,6 +89,7 @@ class Game extends React.Component {
 			history: [{
 				squares: Array(9).fill(null),
 			}],
+			stepnumber: 0,
 			xIsNext: true,
 		};
 	}
@@ -96,7 +104,7 @@ class Game extends React.Component {
 				'Go to move #' + move :
 				'Go to game start';
 		      	return (
-				<li>
+				<li key = {move}>
 			  		<button onClick={() => this.jumpTo(move)}>{desc}</button>
 				</li>
 		      	);
