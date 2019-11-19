@@ -3,7 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 
-function Square(props) {
+interface OldProps {
+	onClick: ()=> void;
+	value: string;
+}
+
+function Square(props: OldProps) {
 	
 		return (
 			<button 
@@ -15,9 +20,15 @@ function Square(props) {
 		);
 }
 
-class Board extends React.Component {
+type BoardProps = {
+	squares: string[];
+	onClick: (i: number)=> void;
+
+}
+
+class Board extends React.Component<BoardProps> {
 	
-	renderSquare(i) {
+	renderSquare(i: number) {
 		return (
 			<Square 
 				value={this.props.squares[i]} 
@@ -50,10 +61,32 @@ class Board extends React.Component {
 	}
 }
 
-class Game extends React.Component {
+interface GameProps {
+	//history: object[],
+	squares: string[]
+}
 
-	constructor(props) {
+interface CurState {
+	//squares: string[]
+	//[key: string]: string[];
+}
+
+type Ihistory = {
+	squares: string[]
+}
+
+interface CurVars {
+	stepNumber: number, 
+	xIsNext: boolean, 
+	history: Ihistory[],
+	//squares: string[]
+}
+
+class Game extends React.Component<CurState, CurVars, GameProps> {
+
+	constructor(props: GameProps) {
 		super(props);
+		
 		this.state = {
 			history: [{
 				squares: Array(9).fill(null)
@@ -64,13 +97,14 @@ class Game extends React.Component {
 		};
 	}
 
-	handleClick(i) {
+	handleClick(i: number) {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
-		const squares = current.squares.slice();
+		const squares: string[] = current.squares.slice();
 		if (calculateWinner(squares) || squares[i]) {
 			return;
 		}
+
 		squares[i] = this.state.xIsNext ? "X" : "O";
 		this.setState({
 			history: history.concat([{
@@ -82,7 +116,7 @@ class Game extends React.Component {
 		});
 	}
 
-	jumpTo(step) {
+	jumpTo(step: number) {
 		this.setState({
 			stepNumber: step,
 			xIsNext: (step % 2) === 0
@@ -94,7 +128,7 @@ class Game extends React.Component {
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current.squares);
 
-		const moves = history.map((step, move) => {
+		const moves = history.map((_step: Ihistory, move: number) => {
 			const desc = move ?
 			'Go to move #' + move :
 			'Go to game start';
@@ -139,7 +173,7 @@ ReactDOM.render(
  );
 
 
- function calculateWinner(squares) {
+ function calculateWinner(squares: string[]) {
 	 const lines = [
 		 [0, 1, 2],
 		 [3, 4, 5],
