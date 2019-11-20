@@ -128,7 +128,7 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 		const current = history[this.state.stepNumber];
 		const winner = calculateWinner(current.squares);
 
-		const moves = history.map((_step: Ihistory, move: number) => {
+		const moves = history.map((_: Ihistory, move: number) => {
 			const desc = move ?
 			'Go to move #' + move :
 			'Go to game start';
@@ -139,7 +139,7 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 			       );
 			});
 
-		let status;
+		let status: string;
 		if (winner) {
 			status = "Winner: " + winner;
 		} else {
