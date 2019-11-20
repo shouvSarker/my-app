@@ -3,10 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 
-interface OldProps {
-	onClick: ()=> void;
-	value: string;
-}
+type OldProps = {
+	readonly onClick: () => void;
+	readonly value: string;
+};
 
 function Square(props: OldProps) {
 	
@@ -21,8 +21,8 @@ function Square(props: OldProps) {
 }
 
 type BoardProps = {
-	squares: string[];
-	onClick: (i: number)=> void;
+	readonly squares: readonly string[];
+	readonly onClick: (i: number) => void;
 
 }
 
@@ -61,26 +61,26 @@ class Board extends React.Component<BoardProps> {
 	}
 }
 
-interface GameProps {
+type GameProps = {
 	//history: object[],
-	squares: string[]
-}
+	readonly squares: readonly string[];
+};
 
-interface CurState {
+type CurState = {
 	//squares: string[]
 	//[key: string]: string[];
-}
+};
 
 type Ihistory = {
-	squares: string[]
+	readonly squares: readonly string[];
 }
 
-interface CurVars {
-	stepNumber: number, 
-	xIsNext: boolean, 
-	history: Ihistory[],
+type CurVars = {
+	readonly stepNumber: number; 
+	readonly xIsNext: boolean; 
+	readonly history: readonly Ihistory[];
 	//squares: string[]
-}
+};
 
 class Game extends React.Component<CurState, CurVars, GameProps> {
 
@@ -100,7 +100,7 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 	handleClick(i: number) {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
-		const squares: string[] = current.squares.slice();
+		const squares: readonly string[] = current.squares.slice();
 		if (calculateWinner(squares) || squares[i]) {
 			return;
 		}
@@ -173,7 +173,7 @@ ReactDOM.render(
  );
 
 
- function calculateWinner(squares: string[]) {
+ function calculateWinner(squares: readonly string[]) {
 	 const lines = [
 		 [0, 1, 2],
 		 [3, 4, 5],
