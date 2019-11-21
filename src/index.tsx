@@ -1,6 +1,8 @@
-import React from 'react';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+//import { number } from 'prop-types';
 
 
 type OldProps = {
@@ -20,6 +22,7 @@ function Square(props: OldProps): JSX.Element {
 		</button>
 	);
 }
+
 
 type BoardProps = {
 	readonly squares: readonly string[];
@@ -64,30 +67,80 @@ function Board(props: BoardProps): JSX.Element {
 	//}
 }
 
+function calculateWinner(squares: readonly string[]): string | null {
+	const lines = [
+		[0, 1, 2],
+		[3, 4, 5],
+		[6, 7, 8],
+		[0, 3, 6],
+		[1, 4, 7],
+		[2, 5, 8],
+		[0, 4, 8],
+		[2, 4, 6],
+	] as const;
 
+	const firstMatch = lines.find( ([a, b, c])=> {
+		return squares[a] && squares[a] === squares[b] && squares[a] === squares[c];
+	});
+
+	return firstMatch? squares[firstMatch[0]] : null
+	
+	/*
+	function compare(line: number[]){
+		const [a, b, c] = line;
+		
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return squares[a];
+		}
+	}
+
+	lines.filter(compare);
+
+	return null;
+	
+	for (let i = 0; i < lines.length; i++) {
+		const [a, b, c] = lines[i];
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return squares[a];
+		}
+	}
+	return null;
+	*/
+	
+}
+
+/*
 type GameProps = {
 	//history: object[],
 	readonly squares: readonly string[];
 };
 
 type CurState = {
-	//squares: string[]
+	readonly squares: readonly string[];
 	//[key: string]: string[];
+	readonly stepNumber: number;
+	readonly xIsNext: boolean;
+	readonly history: readonly Ihistory[];
 };
+*/
 
 type Ihistory = {
 	readonly squares: readonly string[];
 }
 
+/*
 type CurVars = {
 	readonly stepNumber: number;
 	readonly xIsNext: boolean;
 	readonly history: readonly Ihistory[];
 	//squares: string[]
 };
+*/
 
-class Game extends React.Component<CurState, CurVars, GameProps> {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, functional/functional-parameters
+function Game(): JSX.Element {
 
+	/*
 	constructor(props: GameProps) {
 		super(props);
 
@@ -100,40 +153,53 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 			xIsNext: true
 		};
 	}
+	*/
 
-	handleClick(i: number) {
-		const history = this.state.history.slice(0, this.state.stepNumber + 1);
-		const current = history[history.length - 1];
+	const [history, setHistory] = useState<readonly Ihistory[]>([{
+		// eslint-disable-next-line functional/immutable-data
+		squares: Array(9).fill(null)
+	}]);
+	const [stepNumber, setStepNumber] = useState(0);
+	const [xIsNext, setXIsNext] = useState(true);
+
+	// eslint-disable-next-line functional/no-return-void
+	const handleClick = (i: number): void => {
+		const historyHandle = history.slice(0, stepNumber + 1);
+		const current = historyHandle[historyHandle.length - 1];
 		const squares: readonly string[] = current.squares.slice();
-		const squares_front: readonly string[] = squares.slice(0, i);
-		const squares_end: readonly string[] = squares.slice(i+1);
+		const squaresFront: readonly string[] = squares.slice(0, i);
+		const squaresEnd: readonly string[] = squares.slice(i+1);
 
+		// eslint-disable-next-line functional/no-conditional-statement
 		if (calculateWinner(squares) || squares[i]) {
 			return;
 		}
 
-		const new_squares: readonly string[] = [...squares_front, ...[this.state.xIsNext ? "X" : "O"], ...squares_end];
+		const newSquares: readonly string[] = [...squaresFront, ...[xIsNext ? "X" : "O"], ...squaresEnd];
 		
-		this.setState({
-			history: history.concat([{
-				squares: new_squares
-			}]),
+		// eslint-disable-next-line functional/no-expression-statement
+		setHistory(historyHandle.concat([{
+			squares: newSquares
+		}]));
 
-			stepNumber: history.length,
-			xIsNext: !this.state.xIsNext
-		});
+		// eslint-disable-next-line functional/no-expression-statement
+		setStepNumber(historyHandle.length);
+		// eslint-disable-next-line functional/no-expression-statement
+		setXIsNext(!xIsNext);
+
 	}
 
-	jumpTo(step: number) {
-		this.setState({
-			stepNumber: step,
-			xIsNext: (step % 2) === 0
-		});
+	// eslint-disable-next-line functional/no-return-void
+	const jumpTo = (step: number): void => {
+		// eslint-disable-next-line functional/no-expression-statement
+		setStepNumber(step);
+		// eslint-disable-next-line functional/no-expression-statement
+		setXIsNext(step%2 === 0);
 	}
 
-	render() {
-		const history = this.state.history;
-		const current = history[this.state.stepNumber];
+	//render() {
+		//const history = this.state.history;
+		const current = history[stepNumber];
 		const winner = calculateWinner(current.squares);
 
 		const moves = history.map((_: Ihistory, move: number) => {
@@ -142,24 +208,27 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 				'Go to game start';
 			return (
 				<li key={move}>
-					<button onClick={() => this.jumpTo(move)}>{desc}</button>
+					
+					<button 
+						onClick={
+							// eslint-disable-next-line functional/functional-parameters
+							() => jumpTo(move)
+						}>{
+							desc
+						}
+					</button>
 				</li>
 			);
 		});
 
-		let status: string;
-		if (winner) {
-			status = "Winner: " + winner;
-		} else {
-			status = "Next player: " + (this.state.xIsNext ? "X" : "O");
-		}
+		const status: string = winner ? "Winner: " + winner : "Next player: " + (xIsNext ? "X" : "O");
 
 		return (
 			<div className="game">
 				<div className="game-board">
 					<Board
 						squares={current.squares}
-						onClick={i => this.handleClick(i)}
+						onClick={i => handleClick(i)}
 					/>
 				</div>
 				<div className="game-info">
@@ -168,7 +237,7 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 				</div>
 			</div>
 		);
-	}
+	//}
 
 }
 
@@ -179,39 +248,3 @@ ReactDOM.render(
 	<Game />,
 	document.getElementById('root')
 );
-
-
-function calculateWinner(squares: readonly string[]): string | null {
-	const lines = [
-		[0, 1, 2],
-		[3, 4, 5],
-		[6, 7, 8],
-		[0, 3, 6],
-		[1, 4, 7],
-		[2, 5, 8],
-		[0, 4, 8],
-		[2, 4, 6],
-	];
-
-	/*
-	function compare(line: number[]){
-		const [a, b, c] = line;
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return squares[a];
-		}
-	}
-
-	lines.filter(compare);
-
-	return null;
-	*/
-	
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i];
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return squares[a];
-		}
-	}
-	return null;
-	
-}
