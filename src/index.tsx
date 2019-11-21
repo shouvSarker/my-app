@@ -4,12 +4,13 @@ import './index.css';
 
 
 type OldProps = {
-	readonly onClick: () => void;
 	readonly value: string;
+	// eslint-disable-next-line functional/no-mixed-type, functional/no-return-void
+	readonly onClick: () => void;
 };
 
-function Square(props: OldProps) {
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Square(props: OldProps): JSX.Element {
 	return (
 		<button
 			className="square"
@@ -22,44 +23,47 @@ function Square(props: OldProps) {
 
 type BoardProps = {
 	readonly squares: readonly string[];
+	// eslint-disable-next-line functional/no-mixed-type, functional/no-return-void
 	readonly onClick: (i: number) => void;
 
 }
 
-class Board extends React.Component<BoardProps> {
-
-	renderSquare(i: number) {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function Board(props: BoardProps): JSX.Element {
+	const renderSquare = (i: number): JSX.Element => {
 		return (
 			<Square
-				value={this.props.squares[i]}
-				onClick={() => this.props.onClick(i)}
+				value={props.squares[i]}
+				//eslint-disable-next-line functional/functional-parameters
+				onClick={() => props.onClick(i)}
 			/>
 		);
 	}
 
-	render() {
+	//render() {
 
 		return (
 			<div>
 				<div className="board-row">
-					{this.renderSquare(0)}
-					{this.renderSquare(1)}
-					{this.renderSquare(2)}
+					{renderSquare(0)}
+					{renderSquare(1)}
+					{renderSquare(2)}
 				</div>
 				<div className="board-row">
-					{this.renderSquare(3)}
-					{this.renderSquare(4)}
-					{this.renderSquare(5)}
+					{renderSquare(3)}
+					{renderSquare(4)}
+					{renderSquare(5)}
 				</div>
 				<div className="board-row">
-					{this.renderSquare(6)}
-					{this.renderSquare(7)}
-					{this.renderSquare(8)}
+					{renderSquare(6)}
+					{renderSquare(7)}
+					{renderSquare(8)}
 				</div>
 			</div>
 		);
-	}
+	//}
 }
+
 
 type GameProps = {
 	//history: object[],
@@ -170,14 +174,14 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 
 // ========================================
 
-
+// eslint-disable-next-line functional/no-expression-statement
 ReactDOM.render(
 	<Game />,
 	document.getElementById('root')
 );
 
 
-function calculateWinner(squares: readonly string[]) {
+function calculateWinner(squares: readonly string[]): string | null {
 	const lines = [
 		[0, 1, 2],
 		[3, 4, 5],
@@ -188,6 +192,20 @@ function calculateWinner(squares: readonly string[]) {
 		[0, 4, 8],
 		[2, 4, 6],
 	];
+
+	/*
+	function compare(line: number[]){
+		const [a, b, c] = line;
+		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+			return squares[a];
+		}
+	}
+
+	lines.filter(compare);
+
+	return null;
+	*/
+	
 	for (let i = 0; i < lines.length; i++) {
 		const [a, b, c] = lines[i];
 		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
@@ -195,4 +213,5 @@ function calculateWinner(squares: readonly string[]) {
 		}
 	}
 	return null;
+	
 }
