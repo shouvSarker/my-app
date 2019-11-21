@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-//import { number } from 'prop-types';
 
 
 type OldProps = {
@@ -43,28 +42,25 @@ function Board(props: BoardProps): JSX.Element {
 		);
 	}
 
-	//render() {
-
-		return (
-			<div>
-				<div className="board-row">
-					{renderSquare(0)}
-					{renderSquare(1)}
-					{renderSquare(2)}
-				</div>
-				<div className="board-row">
-					{renderSquare(3)}
-					{renderSquare(4)}
-					{renderSquare(5)}
-				</div>
-				<div className="board-row">
-					{renderSquare(6)}
-					{renderSquare(7)}
-					{renderSquare(8)}
-				</div>
+	return (
+		<div>
+			<div className="board-row">
+				{renderSquare(0)}
+				{renderSquare(1)}
+				{renderSquare(2)}
 			</div>
-		);
-	//}
+			<div className="board-row">
+				{renderSquare(3)}
+				{renderSquare(4)}
+				{renderSquare(5)}
+			</div>
+			<div className="board-row">
+				{renderSquare(6)}
+				{renderSquare(7)}
+				{renderSquare(8)}
+			</div>
+		</div>
+	);
 }
 
 function calculateWinner(squares: readonly string[]): string | null {
@@ -83,77 +79,15 @@ function calculateWinner(squares: readonly string[]): string | null {
 		return squares[a] && squares[a] === squares[b] && squares[a] === squares[c];
 	});
 
-	return firstMatch? squares[firstMatch[0]] : null
-	
-	/*
-	function compare(line: number[]){
-		const [a, b, c] = line;
-		
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return squares[a];
-		}
-	}
-
-	lines.filter(compare);
-
-	return null;
-	
-	for (let i = 0; i < lines.length; i++) {
-		const [a, b, c] = lines[i];
-		if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-			return squares[a];
-		}
-	}
-	return null;
-	*/
-	
+	return firstMatch? squares[firstMatch[0]] : null	
 }
-
-/*
-type GameProps = {
-	//history: object[],
-	readonly squares: readonly string[];
-};
-
-type CurState = {
-	readonly squares: readonly string[];
-	//[key: string]: string[];
-	readonly stepNumber: number;
-	readonly xIsNext: boolean;
-	readonly history: readonly Ihistory[];
-};
-*/
 
 type Ihistory = {
 	readonly squares: readonly string[];
 }
 
-/*
-type CurVars = {
-	readonly stepNumber: number;
-	readonly xIsNext: boolean;
-	readonly history: readonly Ihistory[];
-	//squares: string[]
-};
-*/
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars, functional/functional-parameters
 function Game(): JSX.Element {
-
-	/*
-	constructor(props: GameProps) {
-		super(props);
-
-		this.state = {
-			history: [{
-				squares: Array(9).fill(null)
-			}],
-
-			stepNumber: 0,
-			xIsNext: true
-		};
-	}
-	*/
 
 	const [history, setHistory] = useState<readonly Ihistory[]>([{
 		// eslint-disable-next-line functional/immutable-data
@@ -168,7 +102,7 @@ function Game(): JSX.Element {
 		const current = historyHandle[historyHandle.length - 1];
 		const squares: readonly string[] = current.squares.slice();
 		const squaresFront: readonly string[] = squares.slice(0, i);
-		const squaresEnd: readonly string[] = squares.slice(i+1);
+		const squaresEnd: readonly string[] = squares.slice(i + 1);
 
 		// eslint-disable-next-line functional/no-conditional-statement
 		if (calculateWinner(squares) || squares[i]) {
@@ -176,7 +110,7 @@ function Game(): JSX.Element {
 		}
 
 		const newSquares: readonly string[] = [...squaresFront, ...[xIsNext ? "X" : "O"], ...squaresEnd];
-		
+
 		// eslint-disable-next-line functional/no-expression-statement
 		setHistory(historyHandle.concat([{
 			squares: newSquares
@@ -194,51 +128,47 @@ function Game(): JSX.Element {
 		// eslint-disable-next-line functional/no-expression-statement
 		setStepNumber(step);
 		// eslint-disable-next-line functional/no-expression-statement
-		setXIsNext(step%2 === 0);
+		setXIsNext(step % 2 === 0);
 	}
 
-	//render() {
-		//const history = this.state.history;
-		const current = history[stepNumber];
-		const winner = calculateWinner(current.squares);
+	const current = history[stepNumber];
+	const winner = calculateWinner(current.squares);
 
-		const moves = history.map((_: Ihistory, move: number) => {
-			const desc = move ?
-				'Go to move #' + move :
-				'Go to game start';
-			return (
-				<li key={move}>
-					
-					<button 
-						onClick={
-							// eslint-disable-next-line functional/functional-parameters
-							() => jumpTo(move)
-						}>{
-							desc
-						}
-					</button>
-				</li>
-			);
-		});
-
-		const status: string = winner ? "Winner: " + winner : "Next player: " + (xIsNext ? "X" : "O");
-
+	const moves = history.map((_: Ihistory, move: number) => {
+		const desc = move ?
+			'Go to move #' + move :
+			'Go to game start';
 		return (
-			<div className="game">
-				<div className="game-board">
-					<Board
-						squares={current.squares}
-						onClick={i => handleClick(i)}
-					/>
-				</div>
-				<div className="game-info">
-					<div>{status}</div>
-					<ol>{moves}</ol>
-				</div>
-			</div>
-		);
-	//}
+			<li key={move}>
 
+				<button
+					onClick={
+						// eslint-disable-next-line functional/functional-parameters
+						() => jumpTo(move)
+					}>{
+						desc
+					}
+				</button>
+			</li>
+		);
+	});
+
+	const status: string = winner ? "Winner: " + winner : "Next player: " + (xIsNext ? "X" : "O");
+
+	return (
+		<div className="game">
+			<div className="game-board">
+				<Board
+					squares={current.squares}
+					onClick={i => handleClick(i)}
+				/>
+			</div>
+			<div className="game-info">
+				<div>{status}</div>
+				<ol>{moves}</ol>
+			</div>
+		</div>
+	);
 }
 
 // ========================================
