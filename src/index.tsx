@@ -101,14 +101,18 @@ class Game extends React.Component<CurState, CurVars, GameProps> {
 		const history = this.state.history.slice(0, this.state.stepNumber + 1);
 		const current = history[history.length - 1];
 		const squares: readonly string[] = current.squares.slice();
+		const squares_front: readonly string[] = squares.slice(0, i);
+		const squares_end: readonly string[] = squares.slice(i+1);
+
 		if (calculateWinner(squares) || squares[i]) {
 			return;
 		}
 
-		squares[i] = this.state.xIsNext ? "X" : "O";
+		const new_squares: readonly string[] = [...squares_front, ...[this.state.xIsNext ? "X" : "O"], ...squares_end];
+		
 		this.setState({
 			history: history.concat([{
-				squares: squares
+				squares: new_squares
 			}]),
 
 			stepNumber: history.length,
